@@ -148,8 +148,8 @@ Can:
 Determined by `is_admin` boolean on user record, set manually in DB.
 
 Can:
-- Create canonical tricks
-- Create trick aliases
+- Create and delete canonical tricks
+- Create and delete trick aliases
 - Edit trick metadata
 - Hide or remove clips
 - Review reports
@@ -275,8 +275,8 @@ Admin pages live at `/admin/*` in the main app, protected by middleware.
 - Username prompt (shown on first upload/action if no username set)
 
 ### 8.7 Admin pages `/admin/*`
-- `/admin/tricks` — create/edit canonical tricks
-- `/admin/aliases` — create/edit trick aliases
+- `/admin/tricks` — create/edit/delete canonical tricks (delete is permanent with confirmation dialog)
+- `/admin/aliases` — create/delete trick aliases
 - `/admin/reports` — review and action reports
 - `/admin/requests` — review trick requests (approve/reject)
 - `/admin/clips` — moderate clips (hide/remove)
@@ -605,8 +605,8 @@ Use Next.js server actions and/or route handlers with Supabase client. Keep writ
 - Toggle favorite
 - Submit report
 - Submit trick request
-- Admin: create/edit trick
-- Admin: create/edit alias
+- Admin: create/edit/delete trick
+- Admin: create/delete alias
 - Admin: moderate clip/report
 - Admin: review trick requests
 
@@ -781,8 +781,8 @@ Given normalized input:
 | `/favorites` | Auth required | Private favorites list |
 | `/auth/login` | Public | Sign in |
 | `/auth/signup` | Public | Sign up |
-| `/admin/tricks` | Admin | Manage tricks |
-| `/admin/aliases` | Admin | Manage aliases |
+| `/admin/tricks` | Admin | Manage tricks (create, toggle active, delete) |
+| `/admin/aliases` | Admin | Manage aliases (create, delete) |
 | `/admin/reports` | Admin | Review reports |
 | `/admin/requests` | Admin | Review trick requests |
 | `/admin/clips` | Admin | Moderate clips |
