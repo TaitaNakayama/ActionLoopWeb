@@ -27,6 +27,8 @@ export function AdminTricksClient({ tricks: initial }: { tricks: Trick[] }) {
   const [tricks, setTricks] = useState(initial);
   const [newName, setNewName] = useState("");
   const [adding, setAdding] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Trick | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const router = useRouter();
 
   async function handleAdd() {
@@ -57,6 +59,16 @@ export function AdminTricksClient({ tricks: initial }: { tricks: Trick[] }) {
     setTricks((prev) =>
       prev.map((t) => (t.id === trick.id ? { ...t, is_active: !t.is_active } : t))
     );
+  }
+
+  async function handleDelete() {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    const supabase = createClient();
+    await supabase.from("tricks").delete().eq("id", deleteTarget.id);
+    setTricks((prev) => prev.filter((t) => t.id !== deleteTarget.id));
+    setDeleteTarget(null);
+    setDeleting(false);
   }
 
   return (
@@ -92,12 +104,18 @@ export function AdminTricksClient({ tricks: initial }: { tricks: Trick[] }) {
                   {trick.is_active ? "Yes" : "No"}
                 </span>
               </td>
-              <td className="py-2">
+              <td className="py-2 space-x-2">
                 <button
                   onClick={() => toggleActive(trick)}
                   className="text-xs text-primary hover:underline"
                 >
                   {trick.is_active ? "Deactivate" : "Activate"}
+                </button>
+                <button
+                  onClick={() => setDeleteTarget(trick)}
+                  className="text-xs text-red-500 hover:underline"
+                >
+                  Delete
                 </button>
               </td>
             </tr>
@@ -106,6 +124,29 @@ export function AdminTricksClient({ tricks: initial }: { tricks: Trick[] }) {
       </table>
 
       <p className="text-xs text-muted-foreground">{tricks.length} tricks total</p>
+
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+          <div className="bg-background rounded-lg p-6 max-w-sm mx-4 space-y-4">
+            <h3 className="font-semibold text-lg">Delete Trick</h3>
+            <p className="text-sm">
+              Are you sure you want to permanently delete <span className="font-semibold">{deleteTarget.name}</span>? This will also remove all associated aliases and clip-trick links. This action is irreversible.
+            </p>
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={deleting}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={deleting}
+              >
+                {deleting ? "Deleting..." : "Delete Permanently"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
